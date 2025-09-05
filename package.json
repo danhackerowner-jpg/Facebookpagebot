@@ -1,0 +1,16 @@
+{
+  "name": "fb-economy-bot",
+  "version": "1.0.0",
+  "description": "Facebook Page Messenger economy bot with 70 commands and JSON persistence",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
