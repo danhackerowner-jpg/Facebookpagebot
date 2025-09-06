@@ -4,26 +4,31 @@ const path = require("path");
 module.exports = {
   name: "help",
   description: "List all available commands",
-  execute() {
-    const commandsDir = path.join(__dirname);
-    const files = fs.readdirSync(commandsDir).filter(f => f.endsWith(".js"));
+  async execute(ctx) {
+    const dir = path.join(__dirname);
+    const names = [];
 
-    let response = "📜 Commands\n------------\n";
-
-    for (const file of files) {
-      try {
-        const command = require(path.join(commandsDir, file));
-        if (command.name) {
-          response += `➡️ ${command.name}\n`;
-        } else {
-          // fallback to filename if no name property
-          response += `➡️ ${file.replace(".js", "")}\n`;
+    // Scan the commands folder
+    fs.readdirSync(dir).forEach(file => {
+      if (file.endsWith(".js")) {
+        try {
+          const mod = require(path.join(dir, file));
+          if (mod && mod.name) names.push(mod.name);
+        } catch (e) {
+          console.error("Failed loading", file, e.message);
         }
-      } catch (e) {
-        console.error(`Error loading command ${file}:`, e);
       }
-    }
+    });
 
-    return response.trim();
+    const unique = [...new Set(names)].sort();
+    const list = unique.join(", ");
+
+    // Create a border-style box
+    const top = "╔══════════════════════════════════════╗";
+    const bottom = "╚══════════════════════════════════════╝";
+    const middle = `║ COMMANDS: ${list} ║`;
+
+    return [top, middle, bottom].join("\n");
   }
 };
+    
