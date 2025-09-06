@@ -32,7 +32,11 @@ class Database {
     if (!this.data.users) this.data.users = {};
     if (!this.data.cooldowns) this.data.cooldowns = {};
   }
-  save() { writeJSONSafe(this.path, this.data); }
+
+  save() {
+    writeJSONSafe(this.path, this.data);
+  }
+
   getUser(id) {
     if (!this.data.users[id]) {
       this.data.users[id] = {
@@ -48,6 +52,7 @@ class Database {
     }
     return this.data.users[id];
   }
+
   setCooldown(id, key, ms) {
     const until = Date.now() + ms;
     if (!this.data.cooldowns[id]) this.data.cooldowns[id] = {};
@@ -55,11 +60,23 @@ class Database {
     this.save();
     return until;
   }
+
   getCooldown(id, key) {
-    const u = (this.data.cooldowns[id]||{})[key] || 0;
+    const u = (this.data.cooldowns[id] || {})[key] || 0;
     const left = u - Date.now();
     return left > 0 ? left : 0;
+  }
+
+  // ✅ NEW METHOD
+  getAllUserIds() {
+    return Object.keys(this.data.users || {});
+  }
+
+  // (Optional) get all user objects
+  getAllUsers() {
+    return Object.values(this.data.users || {});
   }
 }
 
 module.exports = new Database();
+  
