@@ -82,6 +82,7 @@ async function handleText(psid, text) {
   const args = text.split(/\s+/);
   const name = args[0].toLowerCase();
   const cmd = commands.get(name);
+
   const ctx = {
     psid,
     user,
@@ -89,7 +90,21 @@ async function handleText(psid, text) {
     args,
     say: (t) => sendMessage(psid, { text: t }),
     utils: { parseAmount, fmtCoins, msToHuman },
-    random: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
+    random: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+    broadcast: async (msg) => {
+      // Broadcast to all users in db
+      const allUsers = db.getAllUsers ? db.getAllUsers() : [];
+      let sent = 0;
+      for (const u of allUsers) {
+        try {
+          await sendMessage(u.psid, { text: msg });
+          sent++;
+        } catch (e) {
+          console.error("Broadcast error to", u.psid, e.message);
+        }
+      }
+      return sent;
+    }
   };
 
   if (cmd) {
@@ -107,3 +122,4 @@ async function handleText(psid, text) {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Bot running on port " + PORT));
+      
